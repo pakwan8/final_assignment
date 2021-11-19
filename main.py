@@ -11,7 +11,6 @@
 # (Top line really just install pandas for TAs. Still not 100% sure if we can use it but Marasco said we could so idk)
 import pandas
 
-
 # Imports the csv file and sets the first column as row indices
 # (Might have to change this next line if the data is formatted a different way)
 data = pandas.read_csv(r"datasets\Population_Data.csv", index_col=0)
