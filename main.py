@@ -13,7 +13,6 @@ import pandas as pd
 
 # Imports the csv file and sets the first column as row indices
 # (Might have to change this next line if the pop_data is formatted a different way)
-
 pop_data = pd.read_csv(r"datasets\Population_Data.csv", index_col=0)
 co_data = pd.read_csv(r"datasets\Country_Data.csv", index_col=0)
 print(pop_data)
