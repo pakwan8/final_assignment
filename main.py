@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as im
 
+
 class Dataset:
     def __init__(self, dataset, dataset_name, year):
         self.header = dataset[0]
