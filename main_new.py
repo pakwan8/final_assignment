@@ -160,9 +160,6 @@ def verify(dataset=None, sector=None, year=None, month=None):
     passes = True
     failed_cases = []
     dataset_test = True if dataset in ["retailprice", "customeraccounts", "retailsales", "revenuefromsales"] or dataset is None else False
-    year_test = True if year is None else False
-    # if year is None:
-    #     year_test = True
     if year is not None:
         if year.isdigit():
             if dataset != "customeraccounts":
