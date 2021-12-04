@@ -37,8 +37,7 @@ class Dataset:
                 print(f"{np.min(col):.2f} {self.header[count + 1]}")
             self.graph_data(mode)
         print()
-        
-        
+
     def graph_data(self, mode):
         fig = plt.figure(0)
         chart_items = ['All Sectors', 'Residential', 'Commercial', 'Industrial']
