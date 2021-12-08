@@ -1,0 +1,230 @@
+###################################################################################
+#                                                                                 #
+#   Fraser Pada, Thierry Laforge                                                  #
+#   Pseudocode for a terminal-based application to process and display data       #
+#   based on given user input and internet sourced datasets.                      #
+#                                                                                 #
+###################################################################################
+
+
+
+IMPORT numpy
+from matplotlib IMPORT pyplot as plt
+
+
+DEFINE CLASS Dataset:
+    DEFINE FUNCTION __init__(self, dataset):
+        SET self.units TO top row of dataset
+        SET self.dataset TO dataset without top row
+        SET self.index_cols TO first column of dataset
+        SET self.sectors TO dict of sectors and assigned numbers
+        SET self.months TO months of the year
+
+    DEFINE FUNCTION index(self, sector, year, month=""):
+        SET temp TO empty list
+        FOR index IN self.dataset:
+            IF year from row EQUALS str(year):
+                append index[corresponding sector index] to temp
+
+        RETURN dict(months: temp_backwards) IF month EQUALS "" else dict(months: temp_backwards)[month]
+
+
+DEFINE FUNCTION calculate(dataset, year, sector, rounded=False):
+    SET temp_data TO DATASET dataset
+    SET data_dict TO dict from indexing method of Dataset object
+    SET year_values TO values from data_dict
+    IF not rounded:
+        OUTPUT Mean for year: MEAN year_values
+        OUTPUT Min for year: MIN year_values
+        OUTPUT Max for year: MAX year_values
+    ELSE:
+        OUTPUT Mean for year: MEAN year_values without decimal
+        OUTPUT Min for year: MIN year_values without decimal
+        OUTPUT Max for year: MAX year_values without decimal
+
+    RETURN year_values
+
+
+DEFINE FUNCTION compare(dataset, year, sector1, sector2):
+    SET temp_data TO DATASET dataset
+    SET vals1 TO DATASET.INDEX using sector1
+    SET vals2 TO DATASET.INDEX using sector 2
+    OUTPUT data in CLI table
+
+    RETURN [sector1, vals1], [sector2, vals2]
+
+
+DEFINE FUNCTION print_help(newline=False):
+    SET h_str TO "This program will find the monthly mean, min, or max over a year from an electrical dataset of your choice."
+    ADD \n to beginning IF newline is True else OUTPUT h_str
+    OUTPUT available datasets and ranges for each
+
+
+DEFINE FUNCTION verify(dataset=None, sector=None, year=None, month=None):
+    SET passes TO True
+    SET failed_cases TO empty list
+    SET dataset_txt TO dataset without spaces IF dataset is not None else None
+    SET sector_txt TO sector without spaces IF sector is not None else None
+    SET year_txt TO year without spaces IF year is not None else None
+    SET month_txt TO month without spaces IF month is not None else ""
+    SET months TO months of the year
+    SET dataset_test TO True IF dataset_txt IN available datasets or dataset is None else False
+    IF year_txt is not None:
+        IF year_txt can be casted to int:
+            IF dataset_txt isn't "customeraccounts":
+                SET year_test TO True IF year_txt as int is between 2001 and 2021 else False
+            ELSE:
+                SET year_test TO True IF year_txt as int is between 2008 and 2021 else False
+        ELSE:
+            SET year_test TO False
+    ELSE:
+        SET year_test TO True
+    SET sector_test TO True IF sector_txt IN available sectors or sector is None else False
+    SET month_test TO True IF month_txt IN available months or month_txt is None or month_txt EQUALS "" else False
+    SET tests TO list containing each cases boolean value
+    SET indexed_inputs TO assign inputs to corresponding numbers
+    FOR index, test IN enumerate(tests):
+        IF test failed:
+            SET passes TO False
+            APPEND test, indexed_inputs[index] TO failed_cases
+
+    RETURN passes, failed_cases
+
+
+DEFINE FUNCTION plot_data(dataset, name, year, values, factor, comparing=False, sectors=None, values2=None):
+    SET temp_dataset TO DATASET dataset
+    SET toolbar TO None
+    SET fig TO figure with tight_layout
+    IF name without spaces EQUALS "customeraccounts" or "revenuefromsales":
+        SET title with appropriate name and grammar with smaller font
+    ELSE:
+        SET title with appropriate name and grammar with bigger font
+    SET xlabel TO "Months"
+    SET ylabel TO units from dataset
+    SET window title TO name of dataset
+    SET comb_vals TO both sets of data combined IF values2 is not None else values
+    SET comb_vals_n TO comb_vals without None
+    SET ylim TO lowest value - factor to highest value + factor
+    SET xticks TO available months
+    SET graph borders TO white with grey top
+    SET xlabel and xticks color TO white
+    SET ylabel and yticks color TO white
+    SET window color TO black (Dark mode FTW)
+    IF not comparing:
+        PLOT values with bar
+    ELSE:
+        PLOT values with bar
+        PLOT values2 with bar
+    SHOW legend and plot
+
+
+DEFINE FUNCTION plot_ms(dataset, name, year, values, factor):
+    SET temp_dataset TO Dataset(dataset)
+    SET toolbar TO None
+    SET fig TO figure with tight_layout
+    IF name without spaces EQUALS "customeraccounts" or "revenuefromsales":
+        SET title with appropriate name and grammar with smaller font
+    ELSE:
+        SET title with appropriate name and grammar with bigger font
+    SET xlabel TO "Months"
+    SET ylabel TO units from dataset
+    SET window title TO name of dataset
+    SET comb_vals TO both sets of data combined IF values2 is not None else values
+    SET comb_vals_n TO comb_vals without None
+    SET ylim TO lowest value - factor to highest value + factor
+    SET xticks TO available months
+    SET graph borders TO white with grey top
+    SET xlabel and xticks color TO white
+    SET ylabel and yticks color TO white
+    SET window color TO black (Dark mode FTW)
+    PLOT MEAN values
+    PLOT MIN values
+    PLOT MAX values
+    SHOW legend and plot
+
+
+DEFINE FUNCTION main():
+    SET retail_price TO ave_retail_price.csv
+    SET customer_accounts TO num_cust_acc.csv
+    SET retail_sales TO retail_sales.csv
+    SET revenue_from_sales TO rev_retail_sales.csv
+    SET datasets TO dictionary of text and their corresponding datasets
+    SET options TO dictionary with options and their corresponding options
+    OUTPUT help menu
+    WHILE True:
+        SET option TO user input from main menu
+        IF option isn't IN options:
+            OUTPUT No matching options, please try again
+        ELSE:
+            IF option can be casted to an int:
+                SET data_input TO INPUT dataset
+                SET year_input TO INPUT year
+                SET sector_input TO INPUT first sector
+                SET inputs TO dictionary with inputs and corresponding numbers
+                SET passed, fails TO VERIFY all inputs
+                IF not passed:
+                    OUTPUT Invalid data was inputted, please try again.
+                    FOR fail IN fails:
+                        OUTPUT what input failed and user input
+                    OUTPUT new line
+                    continue
+                ELSE:
+                    SET dataset_final TO datasets[data_input without spaces]
+                    SET year_final TO INT year without spaces
+                    SET sector_final TO sector_input
+                    IF option EQUALS "1":
+                        IF data_input without spaces EQUALS "customeraccounts":
+                            SET vals TO CALCULATE dataset_final, year_final, sector_final, rounded=True
+                            PLOT_MS dataset_final, data_input, year_final, vals, MIN vals / 10
+                        ELSEIF data_input without spaces EQUALS "revenuefromsales" or "retailsales":
+                            SET vals TO CALCULATE dataset_final, year_final, sector_final, rounded=True
+                            PLOT_MS dataset_final, data_input, year_final, vals, MIN vals
+                        ELSE:
+                            SET vals TO CALCULATE dataset_final, year_final, sector_final, rounded=False
+                            PLOT_MS dataset_final, data_input, year_final, vals, 1
+                    IF option EQUALS "2":
+                        SET sector2_choice TO INPUT second sector
+                        SET passed, fails TO VERIFY sector=sector2_choice
+                        IF not passed:
+                            OUTPUT Invalid data was inputted, please try again.
+                            FOR fail IN fails:
+                                OUTPUT what failed and user input
+                            OUTPUT new line
+                            continue
+                        SET sector2_final TO sector2_choice
+                        SET values1, values2 TO COMPARE dataset_final, year_final, sector_final, sector2_final
+                        IF data_input without spaces EQUALS "customeraccounts":
+                            PLOT_DATA dataset_final, data_input, year_final, values2[1], 100, values2=values1[1], sectors=[values1[0], values2[0]], comparing=True
+                        ELSE:
+                            PLOT_DATA dataset_final, data_input, year_final, values1[1], 10, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True
+                    IF option EQUALS "3":
+                        OUTPUT (Leave blank to see every month)
+                        SET month_input TO INPUT month user wants
+                        SET passed, fails TO VERIFY month=month_input
+                        IF not passed:
+                            OUTPUT Invalid data was inputted, please try again.
+                            FOR fail IN fails:
+                                OUTPUT what failed and user input
+                            OUTPUT new line
+                            continue
+                        SET month_final TO months_input
+                        SET dataset_obj TO DATASET dataset_final
+                        SET vals_dict TO DATASET_OBJ.INDEX sector_final, year_final, month_final
+                        OUTPUT new line
+                        IF TYPE vals_dict is dict:
+                            FOR index_month IN vals_dict:
+                                OUTPUT month and data
+                                PLOT_DATA dataset_final, data_input, year_final, vals_dict values as floats, 100, sectors=[sector_final]
+                        ELSE:
+                            OUTPUT month and data
+                        OUTPUT new line
+            ELSE:
+                IF option EQUALS "h":
+                    PRINT_HELP True
+                ELSE:
+                    OUTPUT Thanks for using our program.
+                    break
+
+
+IF __name__ == "__main__":
+    MAIN
