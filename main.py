@@ -264,7 +264,7 @@ def main():
     revenue_from_sales = np.genfromtxt(r"./datasets/rev_retail_sales.csv", delimiter=",", dtype="str", encoding="utf-8-sig")
     datasets = {"retailprice": retail_price, "customeraccounts": customer_accounts, "retailsales": retail_sales, "revenuefromsales": revenue_from_sales}
     options = {"1": calculate, "2": compare, "3": None, "h": print_help, "q": lambda: print("Thank you for using our program.")}
-    print_help()#F
+    print_help()
     while True:
         option = input("1 - Mean/Min/Max\n2 - Compare\n3 - Get data\nh - Help\nq - Quit\n> ").replace(" ", "").lower()
         if option not in options:
@@ -289,13 +289,13 @@ def main():
                     if option == "1":
                         if data_input.replace(" ", "") == "customeraccounts":
                             vals = calculate(dataset_final, year_final, sector_final, rounded=True)
-                            plot_ms(dataset_final, data_input, year_final, vals, np.min(vals) / 100)#F
+                            plot_ms(dataset_final, data_input, year_final, vals, np.min(vals) / 100)
                         elif data_input.replace(" ", "") == "revenuefromsales" or data_input.replace(" ", "") == "retailsales":
                             vals = calculate(dataset_final, year_final, sector_final, rounded=True)
-                            plot_ms(dataset_final, data_input, year_final, vals, np.min(vals))#F
+                            plot_ms(dataset_final, data_input, year_final, vals, np.min(vals))
                         else:
                             vals = calculate(dataset_final, year_final, sector_final, rounded=False)
-                            plot_ms(dataset_final, data_input, year_final, vals, 1)#F
+                            plot_ms(dataset_final, data_input, year_final, vals, 1)
                     if option == "2":
                         sector2_choice = input("Sector 2: ").replace(" ", "").lower()
                         passed, fails = verify(sector=sector2_choice)
@@ -308,9 +308,9 @@ def main():
                         sector2_final = sector2_choice
                         values1, values2 = compare(dataset_final, year_final, sector_final, sector2_final)
                         if data_input.replace(" ", "") == "customeraccounts":
-                            plot_data(dataset_final, data_input, year_final, values2[1], 100, values2=values1[1], sectors=[values1[0], values2[0]], comparing=True)#F
+                            plot_data(dataset_final, data_input, year_final, values2[1], 100, values2=values1[1], sectors=[values1[0], values2[0]], comparing=True)
                         else:
-                            plot_data(dataset_final, data_input, year_final, values1[1], 10, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True)#F
+                            plot_data(dataset_final, data_input, year_final, values1[1], 10, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True)
                     if option == "3":
                         print("(Leave blank to see every month)")
                         month_input = input("Month: ").lower()
@@ -329,9 +329,9 @@ def main():
                             for index_month in vals_dict:
                                 print(f"{index_month.title():^10} - {np.round(np.float64(vals_dict[index_month]), 2):^10.2f}")
                             if data_input.replace(" ", "") == "customeraccounts":
-                                plot_data(dataset_final, data_input, year_final, [np.float64(val) for val in vals_dict.values()], 100, sectors=[sector_final])#F
+                                plot_data(dataset_final, data_input, year_final, [np.float64(val) for val in vals_dict.values()], 100, sectors=[sector_final])
                             else:
-                                plot_data(dataset_final, data_input, year_final, [np.float64(val) for val in vals_dict.values()], 10, sectors=[sector_final])#F
+                                plot_data(dataset_final, data_input, year_final, [np.float64(val) for val in vals_dict.values()], 10, sectors=[sector_final])
                         else:
                             if data_input.replace(" ", "") == "customeraccounts":
                                 print(f"{month_final.title()} - {np.round(np.float64(vals_dict), 2):.0f}")
@@ -340,11 +340,11 @@ def main():
                         print()
             else:
                 if option == "h":
-                    print_help(True)#F
+                    print_help(True)
                 else:
                     print("\nThanks for using our program.\n")
                     break
 
 
 if __name__ == "__main__":
-    main()#F
+    main()
