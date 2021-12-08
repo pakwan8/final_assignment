@@ -4,11 +4,6 @@
 #   A terminal-based application to process and display data based on given user  #
 #   input and internet sourced datasets.                                          #
 #                                                                                 #
-#   !!! DO NOT FORGET TO PUT A LEGEND FOR THE PLOTS !!!                           #
-#   do we need a legend for the one bar per month graph?                          #
-#   for the other one i put blue and red in order to have two distinct values so  #
-#   a legend will work but with the other one it doesn't make 100% sense yet.     #
-#                                                                                 #
 ###################################################################################
 
 import numpy as np
@@ -69,19 +64,19 @@ def calculate(dataset, year, sector, rounded=False):
         rounded (bool): Determines whether final answer will be rounded or not.
 
     Returns:
-        year_values (array)
+        year_values (array): list of values for the year.
     """
     temp_data = Dataset(dataset)
     data_dict = temp_data.index(sector, year)
     year_values = np.array(list(data_dict.values()), dtype=np.float64)
     if not rounded:
-        print(f"\nMean for {year}:\t{np.round(np.mean(year_values), 2):.2f} {temp_data.units}")
-        print(f"Min for {year}:\t{np.round(np.min(year_values), 2):.2f} {temp_data.units}")
-        print(f"Max for {year}:\t{np.round(np.max(year_values), 2):.2f} {temp_data.units}\n")
+        print(f"\nMean for {year}:\t{np.round(np.mean(year_values), 2)} {temp_data.units}")
+        print(f"Min for {year}:\t{np.round(np.min(year_values), 2)} {temp_data.units}")
+        print(f"Max for {year}:\t{np.round(np.max(year_values), 2)} {temp_data.units}\n")
     else:
-        print(f"\nMean for {year}:\t{np.mean(year_values):.0f))} {temp_data.units}")
-        print(f"Min for {year}:\t{np.min(year_values):.0f))} {temp_data.units}")
-        print(f"Max for {year}:\t{np.max(year_values):.0f))} {temp_data.units}\n")
+        print(f"\nMean for {year}:\t{int(np.mean(year_values))} {temp_data.units}")
+        print(f"Min for {year}:\t{int(np.min(year_values))} {temp_data.units}")
+        print(f"Max for {year}:\t{int(np.max(year_values))} {temp_data.units}\n")
 
     return year_values
 
@@ -97,12 +92,12 @@ def compare(dataset, year, sector1, sector2):
         sector2 (str): Second sector that data will be taken from (Second column of desired data).
 
     Returns:
-        vals1 (array): First set of calculated values
-        vals2 (array): Second set of calculated values
+        [sector1, vals1] (list): List of sector's name with its corresponding values.
+        [sector2, vals2] (list): List of sector's name with its corresponding values.
     """
     temp_data = Dataset(dataset)
     vals1 = np.array(list(temp_data.index(sector1, year).values()), dtype=np.float64)
-    vals2 = np.array(list(temp_data.index(sector1, year).values()), dtype=np.float64)
+    vals2 = np.array(list(temp_data.index(sector2, year).values()), dtype=np.float64)
     print("-" * 63)
     print(f"|{temp_data.sectors[sector1][1] + ' (' + temp_data.units + ')':^30}vs{temp_data.sectors[sector2][1] + ' (' + temp_data.units + ')':^29}|")
     print("-" * 63)
@@ -123,8 +118,8 @@ def print_help(newline=False):
     Returns:
         None
     """
-    str = "This program will find the monthly mean, min, or max over a year from an electrical dataset of your choice."
-    print("\n" + str) if newline is True else print(str)
+    h_str = "This program will find the monthly mean, min, or max over a year from an electrical dataset of your choice."
+    print("\n" + h_str) if newline is True else print(h_str)
     print(f"The available datasets are:\n" + "  'Retail Price' (2001-2021)\n" + "  'Customer Accounts' (2008-2021)\n" +
           "  'Retail Sales' (2001-2021)\n" + "  'Revenue from Sales' (2001-2021)\n")
 
@@ -173,15 +168,15 @@ def verify(dataset=None, sector=None, year=None, month=None):
     return passes, failed_cases
 
 
-def plot_data(dataset, name, values, colors, factor, comparing=False, sectors=None, values2=None):
+def plot_data(dataset, name, year, values, factor, comparing=False, sectors=None, values2=None):
     """
     A function to facilitate graphing / plotting data using matplotlib
 
     Parameters:
         dataset (array): Array of the desired data to be processed.
         name (str): Name of the dataset.
+        year (int): Year that data will be taken from (Row of desired data).
         values (array): First set of values to be plotted.
-        colors (array): Array of arrays containing RGB values for the colors of the bars.
         factor (int): Used for scaling purposes in order to emphasize the differences between each value.
         comparing (bool): If True, will plot 2 sets of bars next to each other showing the difference between both value sets.
         sectors (list): List of sector names to be displayed in legend.
@@ -192,10 +187,14 @@ def plot_data(dataset, name, values, colors, factor, comparing=False, sectors=No
     """
     temp_dataset = Dataset(dataset)
     plt.rcParams["toolbar"] = "None"  # Can change this in order to show the toolbar or not
-    plt.figure(facecolor=[0, 0, 0], tight_layout=True)
-    plt.title(name.title(), color=[1, 1, 1], fontsize=16)
+    fig = plt.figure(figsize=[10, 8], facecolor=[0, 0, 0], tight_layout=True)
+    if name.replace(" ", "") == "customeraccounts" or name.replace(" ", "") == "revenuefromsales":
+        plt.title(f"United States Electrical {name.capitalize()} in {year}", color=[1, 1, 1], fontsize=16)
+    else:
+        plt.title(f"United States Electricity {name.capitalize()} in {year}", color=[1, 1, 1], fontsize=18)
     plt.xlabel("Months", fontsize=14)
     plt.ylabel(temp_dataset.units, fontsize=14)
+    fig.canvas.manager.set_window_title(name.title())
     comb_vals = np.array(list(values) + list(values2)) if values2 is not None else np.array(list(values))
     comb_vals_n = [x for x in comb_vals if x is not None]
     plt.ylim(int(np.min(comb_vals_n)) - (int(np.min(comb_vals_n)) / factor), int(np.max(comb_vals_n)) + (int(np.max(comb_vals_n)) / factor))
@@ -211,11 +210,51 @@ def plot_data(dataset, name, values, colors, factor, comparing=False, sectors=No
     ax.tick_params(axis='x', colors=[1, 1, 1], labelrotation=35)
     ax.tick_params(axis='y', colors=[1, 1, 1])
     if not comparing:
-        plt.bar([x for x in range(1, 13)], values, color=[[float(y) / 255 for y in x] for x in colors], edgecolor=[1, 1, 1], width=0.8)
+        plt.bar([x for x in range(1,13)], np.array(values, dtype=np.float64), color=[0, 1, 0], edgecolor=[1, 1, 1], width=0.8, label=sectors[0])
     else:
         plt.bar([x + 0.2 for x in range(1, 13)], np.array(values, dtype=np.float64), color=[0, 0, 1], edgecolor=[1, 1, 1], width=0.4, label=sectors[1])
         plt.bar([x - 0.2 for x in range(1, 13)], np.array(values2, dtype=np.float64), color=[1, 0, 0], edgecolor=[1, 1, 1], width=0.4, label=sectors[0])
-        plt.legend()
+    plt.legend()
+    plt.show()
+    
+    
+def plot_ms(dataset, name, year, values, factor):
+    """
+    Function to plot the mean, min, and max.
+    
+    Parameters:
+        dataset (array): Array of the desired data to be processed.
+        name (str): Name of the dataset.
+        year (int): Year that data will be taken from.
+        values (array): Array of values to be plotted.
+        factor (float): Float for how the graph should be scaled.
+
+    Returns:
+        None
+    """
+    temp_dataset = Dataset(dataset)
+    plt.rcParams["toolbar"] = "None"  # Can change this in order to show the toolbar or not
+    fig = plt.figure(facecolor=[0, 0, 0], tight_layout=True)
+    plt.title(f"Calculated Values for {name.capitalize()} in {year}", color=[1, 1, 1])
+    plt.xlabel("Calculated Values", fontsize=14)
+    plt.ylabel(temp_dataset.units.title(), fontsize=14)
+    fig.canvas.manager.set_window_title(name.title())
+    plt.ylim(np.min(values) - 1 * factor, np.max(values) + 1 * factor)
+    plt.xticks([1, 2, 3], ["Mean", "Min", "Max"])
+    ax = plt.gca()
+    ax.spines['bottom'].set_color([1, 1, 1])
+    ax.spines['top'].set_color([0.35, 0.35, 0.35])
+    ax.spines['right'].set_color([0.35, 0.35, 0.35])
+    ax.spines['left'].set_color([1, 1, 1])
+    ax.xaxis.label.set_color([1, 1, 1])
+    ax.yaxis.label.set_color([1, 1, 1])
+    ax.set_facecolor([0, 0, 0])
+    ax.tick_params(axis='x', colors=[1, 1, 1])
+    ax.tick_params(axis='y', colors=[1, 1, 1])
+    plt.bar([1], np.float64(np.mean(values)), color=[1, 0, 0], edgecolor=[1, 1, 1], width=0.7, label="Mean")
+    plt.bar([2], np.float64(np.min(values)), color=[0, 1, 0], edgecolor=[1, 1, 1], width=0.7, label="Min")
+    plt.bar([3], np.float64(np.max(values)), color=[0, 0, 1], edgecolor=[1, 1, 1], width=0.7, label="Max")
+    plt.legend()
     plt.show()
 
 
@@ -226,7 +265,6 @@ def main():
     revenue_from_sales = np.genfromtxt(r"./datasets/rev_retail_sales.csv", delimiter=",", dtype="str", encoding="utf-8-sig")
     datasets = {"retailprice": retail_price, "customeraccounts": customer_accounts, "retailsales": retail_sales, "revenuefromsales": revenue_from_sales}
     options = {"1": calculate, "2": compare, "3": None, "h": print_help, "q": lambda: print("Thank you for using our program.")}
-    bar_colors_rgb = [[200, 0, 0], [200, 80, 10], [200, 200, 0], [80, 200, 0], [0, 200, 0], [0, 200, 80], [0, 200, 200], [0, 80, 200], [0, 0, 200], [80, 0, 200], [200, 0, 200], [200, 0, 80]]
     print_help()
     while True:
         option = input("1 - Mean/Min/Max\n2 - Compare\n3 - Get data\nh - Help\nq - Quit\n> ").replace(" ", "").lower()
@@ -252,12 +290,15 @@ def main():
                     if option == "1":
                         if data_input.replace(" ", "") == "customeraccounts":
                             vals = calculate(dataset_final, year_final, sector_final, rounded=True)
-                            plot_data(dataset_final, data_input, vals, bar_colors_rgb, 100)
+                            plot_ms(dataset_final, data_input, year_final, vals, np.min(vals) / 100)
+                        elif data_input.replace(" ", "") == "revenuefromsales" or data_input.replace(" ", "") == "retailsales":
+                            vals = calculate(dataset_final, year_final, sector_final, rounded=True)
+                            plot_ms(dataset_final, data_input, year_final, vals, np.min(vals))
                         else:
                             vals = calculate(dataset_final, year_final, sector_final, rounded=False)
-                            plot_data(dataset_final, data_input, vals, bar_colors_rgb, 10)
+                            plot_ms(dataset_final, data_input, year_final, vals, 1)
                     if option == "2":
-                        sector2_choice = input("Second 2: ").replace(" ", "").lower()
+                        sector2_choice = input("Sector 2: ").replace(" ", "").lower()
                         passed, fails = verify(sector=sector2_choice)
                         if not passed:
                             print("Invalid data was inputted, please try again.")
@@ -268,9 +309,9 @@ def main():
                         sector2_final = sector2_choice
                         values1, values2 = compare(dataset_final, year_final, sector_final, sector2_final)
                         if data_input.replace(" ", "") == "customeraccounts":
-                            plot_data(dataset_final, data_input, values1[1], bar_colors_rgb, 100, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True)
+                            plot_data(dataset_final, data_input, year_final, values1[1], 100, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True)
                         else:
-                            plot_data(dataset_final, data_input, values1[1], bar_colors_rgb, 10, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True)
+                            plot_data(dataset_final, data_input, year_final, values1[1], 10, values2=values2[1], sectors=[values1[0], values2[0]], comparing=True)
                     if option == "3":
                         print("(Leave blank to see every month)")
                         month_input = input("Month: ").lower()
@@ -289,9 +330,9 @@ def main():
                             for index_month in vals_dict:
                                 print(f"{index_month.title():^10} - {np.round(np.float64(vals_dict[index_month]), 2):^10.2f}")
                             if data_input.replace(" ", "") == "customeraccounts":
-                                plot_data(dataset_final, data_input, bar_colors_rgb, vals_dict.values(), 100)
+                                plot_data(dataset_final, data_input, year_final, [np.float64(val) for val in vals_dict.values()], 100, sectors=[sector_final])
                             else:
-                                plot_data(dataset_final, data_input, bar_colors_rgb, vals_dict.values(), 10)
+                                plot_data(dataset_final, data_input, year_final, [np.float64(val) for val in vals_dict.values()], 10, sectors=[sector_final])
                         else:
                             if data_input.replace(" ", "") == "customeraccounts":
                                 print(f"{month_final.title()} - {np.round(np.float64(vals_dict), 2):.0f}")
@@ -299,7 +340,11 @@ def main():
                                 print(f"{month_final.title()} - {np.round(np.float64(vals_dict), 2):.2f}")
                         print()
             else:
-                print_help(True) if option == "h" else print("\nThanks for using our program.\n"); exit()
+                if option == "h":
+                    print_help(True)
+                else:
+                    print("\nThanks for using our program.\n")
+                    break
 
 
 if __name__ == "__main__":
